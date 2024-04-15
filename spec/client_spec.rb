@@ -17,8 +17,8 @@ RSpec.describe 'Client' do
     end
 
     it 'raises an SocketError when the server connection fails' do
-      client = Client.new("http://notlocalhost:8080", username, password)
-      expect {client.ok}.to raise_error(SocketError)
+      client = Client.new('http://notlocalhost:8080', username, password)
+      expect { client.ok }.to raise_error(SocketError)
     end
   end
 end
