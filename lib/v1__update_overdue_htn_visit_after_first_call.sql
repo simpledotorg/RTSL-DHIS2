@@ -21,6 +21,7 @@ BEGIN
             FROM programstageinstance
             WHERE programinstanceid = NEW.programinstanceid
               AND programstageid = (SELECT programstageid FROM programstage WHERE uid = htn_diabetes_program_stage_uid)
+              AND deleted = 'f'
               AND status = 'SCHEDULE'
               AND duedate < NEW.executiondate
             ORDER BY duedate DESC
