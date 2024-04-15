@@ -1,0 +1,7 @@
+source "https://rubygems.org"
+ruby "3.0.2"
+gem "rspec"
+gem "webmock"
+gem "rest-client"
+gem "json"
+gem "dhis2"
