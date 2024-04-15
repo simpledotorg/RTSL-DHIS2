@@ -6,17 +6,15 @@ require_relative '../lib/event_trigger'
 
 RSpec.describe 'EventTrigger' do
   before do
-    # fetch all events of the tei - 'mAEqUcmcils'
-    event_data = client.get('events/', {paging: false, trackedEntity: 'mAEqUcmcils', fields: 'event'})
-    # delete all the events
-    event_data['events']&.map { |event|
-      client.delete("events/#{event.values[0]}/")
-      puts("Deleted event - #{event["event"]}")
-    }
-  end
+    # 1. Ensure to create the trigger function in the DHIS2 database
+    # The file path to trigger function = '../lib/v1__update_overdue_htn_visit_after_first_call.sql'
 
-  after do
-    # Do nothing
+    # 2. Delete all the events(if any) of the 'test' tracked entity instance - 'mAEqUcmcils'
+    event_data = client.get('events/', { paging: false, trackedEntity: 'mAEqUcmcils', fields: 'event' })
+    event_data['events']&.map do |event|
+      client.delete("events/#{event.values[0]}/")
+      puts("Deleted event - #{event['event']}")
+    end
   end
 
   describe '#update_overdue_htn_visit_event_after_first_call' do
@@ -89,7 +87,7 @@ RSpec.describe 'EventTrigger' do
   private
 
   def data_element_in_event?(data_element, event_id)
-    event = client.get("events/#{event_id}", {paging: false, trackedEntity: 'mAEqUcmcils'})
+    event = client.get("events/#{event_id}", { paging: false, trackedEntity: 'mAEqUcmcils' })
     data_values = event['dataValues']&.map { |dv| dv['dataElement'] }
     puts data_values
     data_values.include?(data_element)
