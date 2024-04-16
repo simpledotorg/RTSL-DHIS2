@@ -50,9 +50,9 @@ BEGIN
             SET
                 eventdatavalues = latest_overdue_event_data
             WHERE
-                    programstageinstanceid = latest_overdue_event_id;
+                programstageinstanceid = latest_overdue_event_id;
 
-            RAISE NOTICE 'Updated event deatils.....';
+            RAISE NOTICE 'Updated event details.....';
 
         ELSE RAISE NOTICE 'Ignore other calls';
 
@@ -60,6 +60,12 @@ BEGIN
     END IF;
 
     RETURN NEW;
+
+    EXCEPTION
+        WHEN OTHERS THEN
+            -- Log the error message
+            RAISE NOTICE 'Failed to update HTN & Diabetes visit event with call report event details: %', SQLERRM;
+            RETURN NEW;
 
 END;
 
