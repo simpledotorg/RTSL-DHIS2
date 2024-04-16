@@ -4,7 +4,7 @@ require 'rspec'
 require_relative '../lib/client'
 
 RSpec.describe 'Client' do
-  let(:base_url) { 'http://localhost:8080' }
+  let(:base_url) { 'http://localhost:9080' }
   let(:username) { 'admin' }
   let(:fake_username) { 'fake' }
   let(:password) { 'district' }
