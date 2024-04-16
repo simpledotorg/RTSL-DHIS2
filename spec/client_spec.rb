@@ -16,9 +16,15 @@ RSpec.describe 'Client' do
       expect(response.code).to eq(200.to_s)
     end
 
-    it 'raises an SocketError when the server connection fails' do
+    it 'raises an SocketError when the server is not available' do
       client = Client.new('http://notlocalhost:8080', username, password)
       expect { client.ok }.to raise_error(SocketError)
+    end
+
+    it 'raises an error when the server connection fails' do
+      client = Client.new(base_url, fake_username, password)
+      expect { client.ok }.to raise_error(Errno::ECONNREFUSED)
+
     end
   end
 end
