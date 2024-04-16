@@ -3,6 +3,8 @@
 require 'rspec'
 require_relative '../lib/client'
 require_relative '../lib/event_trigger'
+require 'dotenv'
+Dotenv.load('.env')
 
 RSpec.describe 'EventTrigger' do
   before do
@@ -11,12 +13,11 @@ RSpec.describe 'EventTrigger' do
     event_data = client.get('events/', { paging: false, trackedEntity: 'mAEqUcmcils', fields: 'event' })
     event_data['events']&.map do |event|
       client.delete("events/#{event.values[0]}/")
-      puts("Deleted event - #{event['event']}")
     end
   end
 
   describe '#update_overdue_htn_visit_event_after_first_call' do
-    let(:client) { Client.new('http://localhost:8080/api/', 'admin', 'district') }
+    let(:client) { Client.new("#{ENV['DHIS2_URL']}api/", ENV['DHIS2_USERNAME'], ENV['DHIS2_PASSWORD']) }
     let(:program_id) { 'pMIglSEqPGS' }
     let(:org_unit_id) { 'SDXi1tscdL7' }
     let(:tracked_entity_instance_id) { 'mAEqUcmcils' }
@@ -87,7 +88,6 @@ RSpec.describe 'EventTrigger' do
   def data_element_in_event?(data_element, event_id)
     event = client.get("events/#{event_id}", { paging: false, trackedEntity: 'mAEqUcmcils' })
     data_values = event['dataValues']&.map { |dv| dv['dataElement'] }
-    puts data_values
     data_values.include?(data_element)
   end
 end

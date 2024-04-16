@@ -9,3 +9,4 @@ gem 'pg' # PostgreSQL adapter
 gem 'rake'
 gem 'rspec'
 gem 'rubocop'
+gem 'dotenv'
