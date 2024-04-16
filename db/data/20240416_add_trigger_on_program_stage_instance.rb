@@ -15,6 +15,3 @@ class AddTriggerOnProgramStageInstance < ActiveRecord::Migration[7.0]
     SQL
   end
 end
-
-# Run the migration
-
