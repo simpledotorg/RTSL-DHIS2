@@ -24,9 +24,9 @@ class Client
   def send_request(request)
     # Add stored cookies to the request
     request['Cookie'] = @cookie_string unless @cookie_string.empty?
-    request['Authorization'] = @auth_header
+    request['Authorization'] = auth_header
 
-    response = @http.request(request)
+    response = http.request(request)
     # Update the cookie string with new cookies from the response
     update_cookie_string(response)
     response
