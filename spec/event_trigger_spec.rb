@@ -6,9 +6,7 @@ require_relative '../lib/event_trigger'
 
 RSpec.describe 'EventTrigger' do
   before do
-    # 1. Ensure to create the trigger function in the DHIS2 database
-    # The file path to trigger function = '../lib/v1__update_overdue_htn_visit_after_first_call.sql'
-
+    # 1. Ensure the trigger function in present in the DHIS2 database. If not present, run `rake db:migrate`.
     # 2. Delete all the events(if any) of the 'test' tracked entity instance - 'mAEqUcmcils'
     event_data = client.get('events/', { paging: false, trackedEntity: 'mAEqUcmcils', fields: 'event' })
     event_data['events']&.map do |event|
