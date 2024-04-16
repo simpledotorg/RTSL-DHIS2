@@ -30,7 +30,7 @@ RSpec.describe 'EventTrigger' do
     let(:remove_reason_id) { 'MZkqsWH2KSe' }
     let(:first_call_date_id) { 'Y6WYj6bbgeV' }
 
-    it 'updates the htn & diabetes visit event which is overdue with details of first call ' do
+    it 'updates the htn & diabetes visit event which is overdue with details of calling report event' do
       htn_visit = {
         program: program_id,
         eventDate: '2024-03-10',
@@ -83,7 +83,7 @@ RSpec.describe 'EventTrigger' do
       expect(data_element_in_event?(first_call_date_id, overdue_htn_visit_event_id)).to eq(true)
     end
 
-    it 'updates only the htn & diabetes visit event with status SCHEDULE' do
+    it 'updates the htn & diabetes visit event whose status is SCHEDULE' do
       htn_visit = {
         program: program_id,
         eventDate: '2024-03-10',
