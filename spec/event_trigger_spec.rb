@@ -11,8 +11,8 @@ RSpec.describe 'EventTrigger' do
   before do
     # 1. Ensure the trigger function in present in the DHIS2 database. If not present, run `rake db:migrate`.
     # 2. Delete all the events(if any) of the 'test' tracked entity instance - 'mAEqUcmcils'
-    [tracked_entity_instance_1_id, tracked_entity_instance_2_id].map do
-      event_data = client.get('events/', { paging: false, trackedEntity: tracked_entity_instance_1_id, fields: 'event' })
+    [tracked_entity_instance_1_id, tracked_entity_instance_2_id].map do |tei|
+      event_data = client.get('events/', { paging: false, trackedEntity: tei, fields: 'event' })
       event_data['events']&.map do |event|
         client.delete("events/#{event.values[0]}/")
       end
@@ -34,34 +34,44 @@ RSpec.describe 'EventTrigger' do
     let(:first_call_date_id) { 'Y6WYj6bbgeV' }
 
     it 'updates the htn & diabetes visit event which is overdue with details of calling report event' do
-      htn_visit = {
-        program: program_id,
-        eventDate: '2024-03-10',
-        dueDate: '2024-03-10',
-        programStage: htn_visit_program_stage_id,
-        trackedEntityInstance: tracked_entity_instance_1_id,
-        orgUnit: org_unit_id,
-        status: 'COMPLETED',
-        dataValues: [
-          {
-            dataElement: bp_systole_id,
-            value: 143
-          },
-          {
-            dataElement: bp_diastole_id,
-            value: 92
-          }
-        ]
-      }
-      overdue_htn_visit = {
-        program: program_id,
-        dueDate: '2024-04-10',
-        programStage: htn_visit_program_stage_id,
-        status: 'SCHEDULE',
-        trackedEntityInstance: tracked_entity_instance_1_id,
-        orgUnit: org_unit_id
-      }
-      calling_report = {
+      overdue_htn_visit_event_ids = [tracked_entity_instance_1_id, tracked_entity_instance_2_id].map do |tei|
+        htn_visit = {
+          program: program_id,
+          eventDate: '2024-03-10',
+          dueDate: '2024-03-10',
+          programStage: htn_visit_program_stage_id,
+          trackedEntityInstance: tei,
+          orgUnit: org_unit_id,
+          status: 'COMPLETED',
+          dataValues: [
+            {
+              dataElement: bp_systole_id,
+              value: 143
+            },
+            {
+              dataElement: bp_diastole_id,
+              value: 92
+            }
+          ]
+        }
+        overdue_htn_visit = {
+          program: program_id,
+          dueDate: '2024-04-10',
+          programStage: htn_visit_program_stage_id,
+          status: 'SCHEDULE',
+          trackedEntityInstance: tei,
+          orgUnit: org_unit_id
+        }
+        _htn_visit_event = client.post('events/', htn_visit)
+        overdue_htn_visit_event = client.post('events/', overdue_htn_visit)
+        overdue_htn_visit_event['response']['importSummaries'][0]['reference']
+      end
+
+      overdue_htn_visit_event_ids.map do |event_id|
+        expect(has_data_element?(first_call_date_id, event_id)).to eq(false)
+      end
+
+      calling_report1 = {
         status: 'COMPLETED',
         program: program_id,
         programStage: calling_report_program_stage_id,
@@ -80,17 +90,31 @@ RSpec.describe 'EventTrigger' do
           }
         ]
       }
-      _htn_visit_event = client.post('events/', htn_visit)
-      overdue_htn_visit_event = client.post('events/', overdue_htn_visit)
-      overdue_htn_visit_event_id = overdue_htn_visit_event['response']['importSummaries'][0]['reference']
+      calling_report2 = {
+        status: 'COMPLETED',
+        program: program_id,
+        programStage: calling_report_program_stage_id,
+        trackedEntityInstance: tracked_entity_instance_2_id,
+        orgUnit: org_unit_id,
+        eventDate: '2024-04-11',
+        dueDate: '2024-04-11',
+        dataValues: [
+          {
+            dataElement: result_of_call_id,
+            value: 'AGREE_TO_VISIT'
+          }
+        ]
+      }
+      _calling_report_event = client.post('events/', calling_report1)
+      _calling_report_event = client.post('events/', calling_report2)
 
-      expect(has_data_element?(first_call_date_id, overdue_htn_visit_event_id)).to eq(false)
-
-      _calling_report_event = client.post('events/', calling_report)
-      expect(has_data_element?(first_call_date_id, overdue_htn_visit_event_id)).to eq(true)
-      expect(get_value(first_call_date_id, overdue_htn_visit_event_id).to_date).to eq('2024-04-11'.to_date)
-      expect(get_value(result_of_call_id, overdue_htn_visit_event_id)).to eq('REMOVE_FROM_OVERDUE')
-      expect(get_value(remove_reason_id, overdue_htn_visit_event_id)).to eq('MOVED')
+      expect(has_data_element?(first_call_date_id, overdue_htn_visit_event_ids[0])).to eq(true)
+      expect(get_value(first_call_date_id, overdue_htn_visit_event_ids[0]).to_date).to eq('2024-04-11'.to_date)
+      expect(get_value(result_of_call_id, overdue_htn_visit_event_ids[0])).to eq('REMOVE_FROM_OVERDUE')
+      expect(get_value(remove_reason_id, overdue_htn_visit_event_ids[0])).to eq('MOVED')
+      expect(has_data_element?(first_call_date_id, overdue_htn_visit_event_ids[1])).to eq(true)
+      expect(get_value(first_call_date_id, overdue_htn_visit_event_ids[1]).to_date).to eq('2024-04-11'.to_date)
+      expect(get_value(result_of_call_id, overdue_htn_visit_event_ids[1])).to eq('AGREE_TO_VISIT')
     end
 
     it 'updates the htn & diabetes visit event whose status is SCHEDULE' do
