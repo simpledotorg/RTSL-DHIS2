@@ -13,7 +13,7 @@ RSpec.describe 'Client' do
     it 'returns 200 if client is successfully connected' do
       client = Client.new(base_url, username, password)
       response = client.ok
-      expect(response.code).to eq(200.to_s)
+      expect(response&.code.to_i).to eq(200)
     end
 
     it 'raises an SocketError when the server is not available' do

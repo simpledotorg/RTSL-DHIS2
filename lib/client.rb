@@ -33,45 +33,56 @@ class Client
   end
 
   def update_cookie_string(response)
-    if response['Set-Cookie']
-      @cookie_string = response['Set-Cookie']
+      @cookie_string = response['Set-Cookie'] if response['Set-Cookie']
     end
   end
 
   def ok
     current_uri = full_path('dhis-web-dashboard/')
-    redirect_count = 0
+    request = Net::HTTP::Get.new(current_uri)
+    response = send_request(request)
+    handle_http_errors(response)
+  end
 
-    loop do
-      request = Net::HTTP::Get.new(current_uri)
-      response = send_request(request)
-
-      case response.code
-      when '200'
-        return response
-      when '302', '301' # handle both permanent and temporary redirects
-        if redirect_count >= MAX_REDIRECTS
-          puts "Exceeded maximum redirect limit of #{MAX_REDIRECTS}"
-          return response
-        else
-          redirect_count += 1
-          current_uri = URI(response['location']) # Update the URI from the "Location" header
-          puts "Redirected to #{current_uri}"
-          next # Continue the loop with the new URI
-        end
-      else
-        puts "HTTP Request failed: #{response.code}"
-        return response
-      end
+  def handle_http_errors(response, redirect_count = 0)
+    case response.code.to_i
+    when 200..201
+      response
+    when 400
+      puts 'Error: Bad Request'
+      puts "Response Body: #{response.body}"
+      exit # This will terminate the script. Remove if you want the script to continue regardless of errors.
+    when 401
+      puts 'Error: Unauthorized'
+      exit
+    when 403
+      puts 'Error: Forbidden'
+      exit
+    when 404
+      puts 'Error: Not Found'
+      exit
+    when 409
+      puts 'Error: Conflict'
+      exit
+    when 500..599
+      puts 'Error: Server Error'
+      puts "Response Body: #{response.body}"
+      exit
+    when 301..302 # handle both permanent and temporary redirects
+      handle_http_redirects(response, redirect_count)
     end
   end
 
-  def handle_http_errors(response)
-    # todo
-  end
-
-  def handle_http_redirects(current_uri, response)
-    # todo
+  def handle_http_redirects(response, redirect_count)
+    if redirect_count >= MAX_REDIRECTS
+      puts "Exceeded maximum redirect limit of #{MAX_REDIRECTS}"
+    else
+      current_uri = URI(response['location']) # Update the URI from the "Location" header
+      puts "Redirected to #{current_uri}"
+      request = Net::HTTP::Get.new(current_uri)
+      response = send_request(request)
+      handle_http_errors(response, redirect_count + 1)
+    end
   end
 
   def get(path, query_params = {})
