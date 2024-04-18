@@ -33,8 +33,7 @@ class Client
   end
 
   def update_cookie_string(response)
-      @cookie_string = response['Set-Cookie'] if response['Set-Cookie']
-    end
+    @cookie_string = response['Set-Cookie'] if response['Set-Cookie']
   end
 
   def ok
