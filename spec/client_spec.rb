@@ -6,7 +6,6 @@ require_relative '../lib/client'
 RSpec.describe 'Client' do
   let(:base_url) { 'http://localhost:9080' }
   let(:username) { 'admin' }
-  let(:fake_username) { 'fake' }
   let(:password) { 'district' }
 
   describe '#ok' do
@@ -22,7 +21,7 @@ RSpec.describe 'Client' do
     end
 
     it 'raises an error when the server connection fails' do
-      client = Client.new(base_url, fake_username, password)
+      client = Client.new(base_url, username, password)
       expect { client.ok }.to raise_error(Errno::ECONNREFUSED)
 
     end
