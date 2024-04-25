@@ -23,11 +23,11 @@ BEGIN
           AND programstageid = (SELECT programstageid FROM programstage WHERE uid = htn_diabetes_program_stage_uid)
           AND deleted = 'f'
           AND status = 'SCHEDULE'
-          AND duedate < NEW.executiondate
+          AND duedate::date < NEW.executiondate::date
         ORDER BY duedate DESC
         LIMIT 1;
 
-        IF (latest_overdue_event_data IS NULL) OR NOT ( latest_overdue_event_data ? first_call_date_data_element_uid) THEN
+            IF (latest_overdue_event_data IS NULL) OR NOT ( latest_overdue_event_data ? first_call_date_data_element_uid) THEN
             -- Update eventdatavalues in HTN & diabetes event program stage
             RAISE NOTICE 'Adding first call details....';
 
