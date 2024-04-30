@@ -3,7 +3,7 @@ CREATE OR REPLACE FUNCTION update_htn_visit_after_first_call_trigger()
 DECLARE
     htn_diabetes_program_stage_uid TEXT := 'anb2cjLx3WM';
     calling_report_program_stage_uid TEXT := 'W7BCOaSquMd';
-    first_call_date_data_element_uid TEXT := 'Y6WYj6bbgeV';
+    first_call_date_data_element_uid TEXT := 'RQqUzIsuj7t';
 
     latest_overdue_event_data JSONB;
     latest_overdue_event_id BIGINT;
