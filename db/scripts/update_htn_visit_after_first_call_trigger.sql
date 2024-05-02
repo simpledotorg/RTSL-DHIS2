@@ -1,7 +1,7 @@
 CREATE OR REPLACE FUNCTION update_patient_status(program_instance_id BIGINT, remove_reason TEXT) RETURNS VOID AS
 $$
 DECLARE
-    tracked_entity_attribute_uid   TEXT := 'fI1P3Mg1zOZ';
+    ncd_patient_status_tea_uid   TEXT := 'fI1P3Mg1zOZ';
 BEGIN
     UPDATE trackedentityattributevalue
     SET value = CASE
@@ -11,7 +11,7 @@ BEGIN
                     WHEN remove_reason = 'MOVED' THEN 'TRANSFER'
         ELSE value
         END
-    WHERE trackedentityattributeid = (select trackedentityattributeid from trackedentityattribute where uid = tracked_entity_attribute_uid)
+    WHERE trackedentityattributeid = (select trackedentityattributeid from trackedentityattribute where uid = ncd_patient_status_tea_uid)
       AND trackedentityinstanceid = (select trackedentityinstanceid from programinstance where programinstanceid = program_instance_id);
 
 EXCEPTION
@@ -25,7 +25,7 @@ CREATE OR REPLACE FUNCTION update_htn_visit_after_first_call_trigger()
 DECLARE
     htn_diabetes_program_stage_uid              TEXT := 'anb2cjLx3WM';
     calling_report_program_stage_uid            TEXT := 'W7BCOaSquMd';
-    first_call_date_data_element_uid            TEXT := 'RQqUzIsuj7t';
+    first_call_date_data_element_uid            TEXT := 'XMtcYl6Y3Jp';
     result_of_call_data_element_uid             TEXT := 'q362A7evMYt';
     remove_from_overdue_reason_data_element_uid TEXT := 'MZkqsWH2KSe';
     latest_overdue_event_data                   JSONB;
