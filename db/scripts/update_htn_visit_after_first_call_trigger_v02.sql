@@ -39,7 +39,6 @@ BEGIN
     -- Check if the newly inserted row corresponds to the calling report program stage
     IF NEW.programstageid =
        ( SELECT programstageid FROM programstage WHERE uid = calling_report_program_stage_uid ) THEN
-        -- Query the programstageinstance table to find the latest overdue event of the HTN & diabetes program stage
 
         IF (NEW.eventdatavalues -> result_of_call_data_element_uid ->> 'value') = 'REMOVE_FROM_OVERDUE' THEN
             PERFORM update_patient_status(NEW.programinstanceid,
@@ -109,4 +108,5 @@ CREATE OR REPLACE TRIGGER after_insert_calling_report_programstageinstance
     AFTER INSERT OR UPDATE
     ON programstageinstance
     FOR EACH ROW
+    WHEN (pg_trigger_depth() = 0)
 EXECUTE FUNCTION update_htn_visit_after_first_call_trigger();
