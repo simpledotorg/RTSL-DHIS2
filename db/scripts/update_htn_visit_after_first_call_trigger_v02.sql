@@ -46,6 +46,11 @@ BEGIN
                                           'value');
         END IF;
         -- Check if the newly inserted row corresponds to the visit program stage
+        -- **Note** If the health worker skips a scheduled event after or before creating
+        -- an new visit event, the scheduled date is lost. This means this patient will
+        -- not be counted as overdue in the statistics. This workflow needs to prevented
+        -- by proper training.
+
     ELSEIF (NEW.programstageid =
             ( SELECT programstageid FROM programstage WHERE uid = htn_diabetes_program_stage_uid ) AND
             NEW.status IN ('ACTIVE', 'COMPLETED')) THEN
