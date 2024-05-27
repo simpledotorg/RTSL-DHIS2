@@ -59,7 +59,7 @@ BEGIN
           AND psi.executiondate < NEW.executiondate
           AND ps.uid = htn_diabetes_program_stage_uid;
 
-        -- Find the execution date of the first calling report of the month after the previous visit
+        -- Find the execution date of the first calling report of the month between the previous visit and the current visit
 
         SELECT executiondate, programstageinstanceid, eventdatavalues
         INTO first_calling_report_date, first_calling_report_id, first_calling_report_data
@@ -70,6 +70,7 @@ BEGIN
                JOIN programstage ps ON psi.programstageid = ps.programstageid
                WHERE psi.programinstanceid = NEW.programinstanceid
                  AND psi.executiondate >= previous_visit_date
+                 AND psi.executiondate < NEW.executiondate
                  AND ps.uid = calling_report_program_stage_uid
              ) AS first_call_report_of_month
         WHERE call_number = 1
