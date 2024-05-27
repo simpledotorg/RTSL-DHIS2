@@ -16,7 +16,7 @@ RUN chown dhis:dhis /home/dhis/config
 RUN  dpkg-reconfigure tzdata
 
 # copy dhis2 config
-COPY --chmod=600 ../../dhis2/dhis2-setup/local/docker/dhis.conf /home/dhis/config/dhis.conf
+COPY --chmod=600 ./docker/dhis.conf /home/dhis/config/dhis.conf
 
 # install tomcat
 RUN apt-get update && apt-get -y install tomcat9-user
