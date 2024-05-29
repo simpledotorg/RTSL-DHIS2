@@ -8,7 +8,7 @@ $$
 DECLARE
     htn_diabetes_program_stage_uid              TEXT := 'anb2cjLx3WM';
     calling_report_program_stage_uid            TEXT := 'W7BCOaSquMd';
-    first_call_date_data_element_uid            TEXT := 'RE0nxwNO55H';
+    first_call_date_data_element_uid            TEXT := 'XMtcYl6Y3Jp';
     result_of_call_data_element_uid             TEXT := 'q362A7evMYt';
     remove_from_overdue_reason_data_element_uid TEXT := 'MZkqsWH2KSe';
     previous_visit_date                         TIMESTAMP;
