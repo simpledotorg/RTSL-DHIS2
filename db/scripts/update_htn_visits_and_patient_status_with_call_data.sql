@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION update_htn_visits_with_call_data(new_program_stage_id BIGINT,
+CREATE OR REPLACE FUNCTION update_htn_visits_and_patient_status_with_call_data(new_program_stage_id BIGINT,
                                                              new_program_stage_instance_id BIGINT,
                                                              new_program_instance_id BIGINT, new_eventdatavalues JSONB,
                                                              new_status TEXT,
@@ -99,7 +99,7 @@ EXCEPTION
 END;
 $$ LANGUAGE plpgsql;
 ------------------------
-SELECT update_htn_visits_with_call_data(programstageid, programstageinstanceid,
+SELECT update_htn_visits_and_patient_status_with_call_data(programstageid, programstageinstanceid,
                                          programinstanceid, eventdatavalues,
                                          status, executiondate)
 FROM programstageinstance;
