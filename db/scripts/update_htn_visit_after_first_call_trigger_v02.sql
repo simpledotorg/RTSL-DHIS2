@@ -88,8 +88,14 @@ BEGIN
                                             first_call_date_data_element_uid,
                                             JSONB_BUILD_OBJECT(
                                                     'value', first_calling_report_date,
-                                                    'created', (SELECT created FROM programstageinstance WHERE programstageinstanceid = first_calling_report_id),
-                                                    'lastUpdated', (SELECT lastupdated FROM programstageinstance WHERE programstageinstanceid = first_calling_report_id),
+                                                    'created', ( SELECT created
+                                                                 FROM programstageinstance
+                                                                 WHERE programstageinstanceid = first_calling_report_id
+                                                               ),
+                                                    'lastUpdated', ( SELECT lastupdated
+                                                                     FROM programstageinstance
+                                                                     WHERE programstageinstanceid = first_calling_report_id
+                                                                   ),
                                                     'providedElsewhere', FALSE
                                                 )
                                         );
@@ -114,5 +120,5 @@ CREATE OR REPLACE TRIGGER after_insert_calling_report_programstageinstance
     AFTER INSERT OR UPDATE
     ON programstageinstance
     FOR EACH ROW
-    WHEN (pg_trigger_depth() = 0)
+    WHEN (PG_TRIGGER_DEPTH() = 0)
 EXECUTE FUNCTION update_htn_visit_after_first_call_trigger();
