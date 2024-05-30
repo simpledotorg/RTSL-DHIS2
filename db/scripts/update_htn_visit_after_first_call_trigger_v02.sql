@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION update_patient_status(program_instance_id BIGINT, remove_reason TEXT) RETURNS VOID AS
+CREATE OR REPLACE FUNCTION update_ncd_patient_status(program_instance_id BIGINT, remove_reason TEXT) RETURNS VOID AS
 $$
 DECLARE
     ncd_patient_status_tea_uid TEXT := 'fI1P3Mg1zOZ';
@@ -41,7 +41,7 @@ BEGIN
        ( SELECT programstageid FROM programstage WHERE uid = calling_report_program_stage_uid ) THEN
 
         IF (NEW.eventdatavalues -> result_of_call_data_element_uid ->> 'value') = 'REMOVE_FROM_OVERDUE' THEN
-            PERFORM update_patient_status(NEW.programinstanceid,
+            PERFORM update_ncd_patient_status(NEW.programinstanceid,
                                           NEW.eventdatavalues -> remove_from_overdue_reason_data_element_uid ->>
                                           'value');
         END IF;

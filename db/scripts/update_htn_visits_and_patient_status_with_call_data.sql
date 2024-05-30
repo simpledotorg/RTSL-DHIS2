@@ -21,7 +21,7 @@ BEGIN
        ( SELECT programstageid FROM programstage WHERE uid = calling_report_program_stage_uid ) THEN
 
         IF (new_eventdatavalues -> result_of_call_data_element_uid ->> 'value') = 'REMOVE_FROM_OVERDUE' THEN
-            PERFORM update_patient_status(new_program_instance_id,
+            PERFORM update_ncd_patient_status(new_program_instance_id,
                                           new_eventdatavalues -> remove_from_overdue_reason_data_element_uid ->>
                                           'value');
             RAISE NOTICE 'Updated the attribute';
