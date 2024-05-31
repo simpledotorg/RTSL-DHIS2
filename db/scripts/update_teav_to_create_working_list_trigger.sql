@@ -194,7 +194,6 @@ BEGIN
                 WHERE
                         psi.programinstanceid = pi.programinstanceid
                   AND psi.status IN ('SCHEDULE', 'OVERDUE')
-                  AND teav.value = 'UPCOMING_VISIT'
                   AND teav.trackedentityattributeid = (
                     SELECT trackedentityattributeid
                     FROM trackedentityattribute
