@@ -16,6 +16,11 @@ DECLARE
     first_calling_report_id                     BIGINT;
     first_calling_report_date                   TIMESTAMP;
 BEGIN
+    -- Update event status from OVERDUE to SCHEDULE
+    UPDATE programstageinstance
+    SET status = 'SCHEDULE'
+    WHERE status = 'OVERDUE';
+
     -- Check if the newly inserted row corresponds to the calling report program stage
     IF new_program_stage_id =
        ( SELECT programstageid FROM programstage WHERE uid = calling_report_program_stage_uid ) THEN

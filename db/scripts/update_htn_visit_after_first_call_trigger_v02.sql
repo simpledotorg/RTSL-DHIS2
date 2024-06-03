@@ -36,14 +36,20 @@ DECLARE
     first_calling_report_id                     BIGINT;
     first_calling_report_date                   TIMESTAMP;
 BEGIN
+    -- Update event status from OVERDUE to SCHEDULE
+    IF NEW.programstageid = ( SELECT programstageid FROM programstage WHERE uid = htn_diabetes_program_stage_uid ) AND
+       NEW.status IN ('OVERDUE') THEN
+        NEW.status := 'SCHEDULE';
+    END IF;
+
     -- Check if the newly inserted row corresponds to the calling report program stage
     IF NEW.programstageid =
        ( SELECT programstageid FROM programstage WHERE uid = calling_report_program_stage_uid ) THEN
 
         IF (NEW.eventdatavalues -> result_of_call_data_element_uid ->> 'value') = 'REMOVE_FROM_OVERDUE' THEN
             PERFORM update_ncd_patient_status(NEW.programinstanceid,
-                                          NEW.eventdatavalues -> remove_from_overdue_reason_data_element_uid ->>
-                                          'value');
+                                              NEW.eventdatavalues -> remove_from_overdue_reason_data_element_uid ->>
+                                              'value');
         END IF;
         -- Check if the newly inserted row corresponds to the visit program stage
         -- **Note** If the health worker skips a scheduled event after or before creating
@@ -99,10 +105,7 @@ BEGIN
                                                     'providedElsewhere', FALSE
                                                 )
                                         );
-
-        UPDATE programstageinstance
-        SET eventdatavalues = first_calling_report_data
-        WHERE programstageinstanceid = NEW.programstageinstanceid;
+        NEW.eventdatavalues := first_calling_report_data;
     END IF;
 
     RETURN NEW;
